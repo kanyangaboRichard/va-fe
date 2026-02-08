@@ -28,7 +28,7 @@ export default function LandingPage() {
               to="/login"
               className="inline-flex items-center gap-2 rounded-md bg-white px-6 py-3 font-medium text-indigo-700 hover:bg-indigo-50 transition"
             >
-              Start Assessment <ArrowRight className="h-4 w-4" />
+               Assessments <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>
