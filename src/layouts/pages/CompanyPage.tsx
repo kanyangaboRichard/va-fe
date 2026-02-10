@@ -1,13 +1,19 @@
 import { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
 import { toast } from "react-hot-toast";
+
 import { useAppDispatch } from "../../feature/hooks/useAppDispatch";
 import { useAppSelector } from "../../feature/hooks/useAppSelector";
-import { fetchCompanies, addCompany,updateCompany} from "../../feature/company/companySlice";
+import {
+  fetchCompanies,
+  addCompany,
+  updateCompany,
+} from "../../feature/company/companySlice";
+
 import CompanyCard from "../../components/companyCard";
 import CompanyForm from "../../components/companyForm";
-import AdminNav from "../../components/adminNav";
 import type { Company } from "../../types";
+import AppLayout from "../../layouts/appLayout";
 
 const CompanyPage = () => {
   const dispatch = useAppDispatch();
@@ -47,39 +53,27 @@ const CompanyPage = () => {
     }
   };
 
-  /* ---------- LOADING ---------- */
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <AdminNav />
+  return (
+    <AppLayout>
+      {/* ---------- LOADING ---------- */}
+      {isLoading && (
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600" />
         </div>
-      </div>
-    );
-  }
+      )}
 
-  /* ---------- ERROR ---------- */
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <AdminNav />
-        <div className="max-w-7xl mx-auto py-6 px-6">
+      {/* ---------- ERROR ---------- */}
+      {error && (
+        <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="bg-red-50 border border-red-200 rounded-md p-4">
             <p className="text-red-700">Error: {error}</p>
           </div>
         </div>
-      </div>
-    );
-  }
+      )}
 
-  /* ---------- MAIN ---------- */
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <AdminNav />
-
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
+      {/* ---------- MAIN ---------- */}
+      {!isLoading && !error && (
+        <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-3xl font-bold text-gray-900">
               Companies
@@ -116,7 +110,7 @@ const CompanyPage = () => {
             </div>
           )}
         </div>
-      </div>
+      )}
 
       <CompanyForm
         company={selectedCompany || undefined}
@@ -127,7 +121,7 @@ const CompanyPage = () => {
         }}
         onSubmit={handleAddEdit}
       />
-    </div>
+    </AppLayout>
   );
 };
 

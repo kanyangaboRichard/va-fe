@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
-import { LandingPage } from "../layouts/LandingPage";
+import { LandingPage } from "../layouts/pages/LandingPage";
 import Login  from "../auth/Login"; 
-import CompanyPage from "../../src/feature/company/CompanyPage";
+import CompanyPage from "../layouts/pages/CompanyPage";
 
 // import { AssessmentForm } from "../assessments/AssessmentForm"; // later
 //import DomainPage from "../feature/domain/DomainPage();
