@@ -1,15 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Lock, LogIn } from "lucide-react";
-import { useAuthStore } from "../store/authStore";
+import { useAuthStore } from "../feature/store/authStore";
 import { ROUTES } from "../constants/routes";
 
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { login, isAuthenticated } = useAuthStore();
+  const { login } = useAuthStore();
 
   const [credentials, setCredentials] = useState({
     email: "",
@@ -19,15 +19,15 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // only redirect back if user was sent here from a protected route
   const from =
     (location.state as { from?: Location })?.from?.pathname ||
     ROUTES.DASHBOARD;
 
+  
+  
   useEffect(() => {
-    if (isAuthenticated()) {
-      navigate(from, { replace: true });
-    }
-  }, [isAuthenticated, navigate, from]);
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCredentials((prev) => ({
@@ -42,15 +42,19 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const success = await login(credentials.email, credentials.password);
+      const success = await login(
+        credentials.email,
+        credentials.password
+      );
+
       if (success) {
         navigate(from, { replace: true });
       } else {
         setError("Invalid email or password");
       }
     } catch (err: unknown) {
-      const errorMessage = 
-        (err as any)?.response?.data?.message || "Login failed";
+      const errorMessage =
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message || "Login failed";
       setError(errorMessage);
     } finally {
       setIsLoading(false);
@@ -60,7 +64,6 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-100 px-4">
       <div className="w-full max-w-md rounded-xl bg-white shadow-lg p-8">
-        
         {/* Header */}
         <div className="text-center">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100">

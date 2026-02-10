@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import Axios from "../api/Axios";
-import { ROUTES } from "../constants/routes";
+import Axios from "../../api/Axios";
+import { ROUTES } from "../../constants/routes";
 
 interface User {
   id: string;
