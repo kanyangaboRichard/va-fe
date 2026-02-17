@@ -1,6 +1,10 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { Building2, Factory, LogOut, User } from "lucide-react";
+import { Building2, ClipboardList, LogOut,} from "lucide-react";
 import { useAuthStore } from "../../src/feature/store/authStore";
+//import Assessments from "./pages/AssessmentPage";
+import { LayoutDashboard } from "lucide-react";
+import { ListTodo } from "lucide-react";
+import { Settings } from "lucide-react";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -20,6 +24,18 @@ const Sidebar = () => {
 
       {/* Navigation */}
       <nav className="flex-1 px-3 space-y-1">
+
+        <NavLink
+          to="/dashboard"
+          className={({ isActive }) =>
+            `flex items-center gap-3 rounded-md px-3 py-2 text-sm
+             ${isActive ? "bg-slate-800 text-white" : "text-slate-300 hover:bg-slate-800"}`
+          }
+        >
+          <LayoutDashboard className="h-5 w-5" />
+          Dashboard
+        </NavLink>
+
         <NavLink
           to="/companyPage"
           className={({ isActive }) =>
@@ -32,14 +48,36 @@ const Sidebar = () => {
         </NavLink>
 
         <NavLink
-          to="/AssessmentPage"
+          to="/assessmentPage"
           className={({ isActive }) =>
             `flex items-center gap-3 rounded-md px-3 py-2 text-sm
              ${isActive ? "bg-slate-800 text-white" : "text-slate-300 hover:bg-slate-800"}`
           }
         >
-          <Factory className="h-5 w-5" />
+          <ClipboardList className="h-5 w-5" />
           Assessments
+        </NavLink>
+
+        <NavLink
+          to="/ChecklistPage"
+          className={({ isActive }) =>
+            `flex items-center gap-3 rounded-md px-3 py-2 text-sm
+             ${isActive ? "bg-slate-800 text-white" : "text-slate-300 hover:bg-slate-800"}`
+          }
+        >
+          <ListTodo className="h-5 w-5" />
+          Checklists
+        </NavLink>
+
+        <NavLink
+          to="/settings"
+          className={({ isActive }) =>
+            `flex items-center gap-3 rounded-md px-3 py-2 text-sm
+             ${isActive ? "bg-slate-800 text-white" : "text-slate-300 hover:bg-slate-800"}`
+          }
+        >
+          <Settings className="h-5 w-5" />
+          Settings
         </NavLink>
       </nav>
 

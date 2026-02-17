@@ -1,18 +1,12 @@
 import { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
 import { toast } from "react-hot-toast";
-
 import { useAppDispatch } from "../../feature/hooks/useAppDispatch";
 import { useAppSelector } from "../../feature/hooks/useAppSelector";
-import {
-  fetchCompanies,
-  addCompany,
-  updateCompany,
-} from "../../feature/company/companySlice";
-
+import {fetchCompanies,addCompany,updateCompany,} from "../../feature/company/companySlice";
 import CompanyCard from "../../components/companyCard";
 import CompanyForm from "../../components/companyForm";
-import type { Company } from "../../types";
+import type{ Company } from "../../types";
 import AppLayout from "../../layouts/appLayout";
 
 const CompanyPage = () => {
