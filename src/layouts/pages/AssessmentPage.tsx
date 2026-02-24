@@ -1,180 +1,289 @@
-import { useEffect, useMemo, useState } from "react";
-import { useAppDispatch } from "../../feature/hooks/useAppDispatch";
-import { fetchAssessments } from "../../feature/assessments/assessmentSlice";
-import { useAppSelector } from "../../feature/hooks/useAppSelector";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Clipboard } from "lucide-react";
 import AppLayout from "../../layouts/appLayout";
-import { Pencil  } from "lucide-react";
-import { Search } from "lucide-react";
+import { useAppDispatch } from "../../feature/hooks/useAppDispatch";
+import { useAppSelector } from "../../feature/hooks/useAppSelector";
+import {fetchAssessments,createAssessment,} from "../../feature/assessments/assessmentSlice";
+import { fetchCompanies } from "../../feature/company/companySlice";
+import { fetchChecklists } from "../../feature/checklists/checklistSlice";
 
 const Assessments = () => {
   const dispatch = useAppDispatch();
-  const { assessments, isLoading, error } = useAppSelector(
+  const navigate = useNavigate();
+
+
+  // Redux State
+  const { assessments, isLoading } = useAppSelector(
     (state) => state.assessments
   );
 
+  const { companies } = useAppSelector((state) => state.companies);
+  const checklists = useAppSelector((state) => state.checklists.data || state.checklists.items || []);
+
+  
+  // Local State
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
-  const [currentPage, setCurrentPage] = useState(1);
 
-  const itemsPerPage = 5;
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedCompany, setSelectedCompany] = useState("");
+  const [selectedChecklist, setSelectedChecklist] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [creating, setCreating] = useState(false);
 
+  
+  // Fetch Data
   useEffect(() => {
     dispatch(fetchAssessments());
+    dispatch(fetchCompanies());
+    dispatch(fetchChecklists());
   }, [dispatch]);
 
-  //  Filter + Search
-  const filteredAssessments = useMemo(() => {
-    return assessments
-      .filter((a: any) =>
-        statusFilter === "ALL" ? true : a.status === statusFilter
-      )
-      .filter((a: any) =>
-        a.name.toLowerCase().includes(search.toLowerCase())
+  
+  // Create Assessment
+  const handleCreate = async () => {
+    if (!selectedCompany || !selectedChecklist) return;
+
+    try {
+      setCreating(true);
+
+      const result = await dispatch(
+        createAssessment({
+          companyId: selectedCompany,
+          checklistId: selectedChecklist,
+          name: ""
+        })
       );
-  }, [assessments, search, statusFilter]);
 
-  // Pagination Logic
-  const totalPages = Math.ceil(filteredAssessments.length / itemsPerPage);
-  const paginatedAssessments = filteredAssessments.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+      const payload = result.payload;
+      const id =
+        payload && typeof payload !== "string" && (payload as any).id
+          ? (payload as any).id
+          : undefined;
 
-  if (isLoading) return <AppLayout><div className="p-6">Loading...</div></AppLayout>;
-  if (error) return <AppLayout><div className="p-6 text-red-500">{error}</div></AppLayout>;
+      if (id) {
+        setOpenModal(false);
+        navigate(`/assessments/${id}`);
+      }
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  // Filter Logic
+  const filtered = assessments.filter((a) => {
+    const matchesSearch =
+      a.company.name.toLowerCase().includes(search.toLowerCase()) ||
+      a.checklist.name.toLowerCase().includes(search.toLowerCase());
+
+    const matchesStatus =
+      statusFilter === "ALL" || a.status === statusFilter;
+
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <AppLayout>
-      <div className="p-6">
+      <div className="p-6 space-y-6">
 
-        {/* HEADER */}
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-semibold">Assessment Management</h1>
+        {/* ================= Header ================= */}
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-semibold flex items-center gap-2">
+            <Clipboard className="w-6 h-6" />
+            Assessments
+          </h1>
 
-          <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
-            + Start Assessment
+          <button
+            onClick={() => setOpenModal(true)}
+            className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition"
+          >
+            + New Assessment
           </button>
         </div>
 
-        {/* SEARCH + FILTER */}
-        <div className="flex gap-4 mb-6">
-          <div className="relative w-1/3">
-            <input
-              type="text"
-              placeholder="Search assessment..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="border rounded-lg px-3 py-2 w-full"
-            />
-            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-          </div>
-          
+        {/* ================= Filters ================= */}
+        <div className="flex gap-4">
+          <input
+            type="text"
+            placeholder="Search..."
+            className="border px-3 py-2 rounded-md w-64"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+
           <select
+            className="border px-3 py-2 rounded-md"
             value={statusFilter}
-            onChange={(e) => {
-              setStatusFilter(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="border rounded-lg px-3 py-2"
+            onChange={(e) => setStatusFilter(e.target.value)}
           >
-            <option value="ALL">All</option>
-            <option value="Draft">Draft</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Completed">Completed</option>
+            <option value="ALL">All Status</option>
+            <option value="DRAFT">Draft</option>
+            <option value="IN_PROGRESS">In Progress</option>
+            <option value="COMPLETED">Completed</option>
           </select>
         </div>
 
-        {/* ASSESSMENT LIST */}
-        <div className="space-y-4">
-          {paginatedAssessments.map((assessment: any) => {
-            const progress = assessment.progress || 0;
-            const risk = assessment.riskLevel || "LOW";
+        {/* ================= Table ================= */}
+        <div className="bg-white shadow rounded-lg overflow-hidden">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 text-left">
+              <tr>
+                <th className="px-4 py-3">Company</th>
+                <th className="px-4 py-3">Checklist</th>
+                <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3">Progress</th>
+                <th className="px-4 py-3">Risk</th>
+              </tr>
+            </thead>
 
-            return (
-              <div
-                key={assessment.id}
-                className="bg-white shadow rounded-lg p-6 flex justify-between items-center"
-              >
-                {/* LEFT */}
-                <div className="space-y-2 w-2/3">
-                  <h2 className="text-lg font-bold">{assessment.name}</h2>
-                  <p className="text-sm text-gray-500">
-                    Company: {assessment.company?.name || "N/A"}
-                  </p>
+            <tbody>
+              {filtered.map((assessment) => (
+                <tr
+                  key={assessment.id}
+                  className="border-t hover:bg-gray-50 cursor-pointer"
+                  onClick={() =>
+                    navigate(`/assessments/${assessment.id}`)
+                  }
+                >
+                  <td className="px-4 py-3">
+                    {assessment.company.name}
+                  </td>
 
-                  {/* Progress Bar */}
-                  <div>
-                    <div className="flex justify-between text-xs mb-1">
-                      <span>Progress</span>
-                      <span>{progress}%</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                  <td className="px-4 py-3">
+                    {assessment.checklist.name}
+                  </td>
+
+                  <td className="px-4 py-3">
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs ${
+                        assessment.status === "COMPLETED"
+                          ? "bg-green-100 text-green-600"
+                          : assessment.status === "IN_PROGRESS"
+                          ? "bg-yellow-100 text-yellow-600"
+                          : "bg-gray-200 text-gray-700"
+                      }`}
+                    >
+                      {assessment.status}
+                    </span>
+                  </td>
+
+                  <td className="px-4 py-3 w-48">
+                    <div className="w-full bg-gray-200 h-2 rounded">
                       <div
-                        className="bg-indigo-600 h-2 rounded-full"
-                        style={{ width: `${progress}%` }}
-                      ></div>
+                        className="bg-indigo-600 h-2 rounded"
+                        style={{
+                          width: `${assessment.progress || 0}%`,
+                        }}
+                      />
                     </div>
-                  </div>
+                    <span className="text-xs text-gray-500">
+                      {assessment.progress || 0}%
+                    </span>
+                  </td>
 
-                  {/* Status Badge */}
-                  <span
-                    className={`inline-block px-3 py-1 text-xs rounded-full ${
-                      assessment.status === "COMPLETED"
-                        ? "bg-green-100 text-green-700"
-                        : assessment.status === "IN_PROGRESS"
-                        ? "bg-yellow-100 text-yellow-700"
-                        : "bg-gray-100 text-gray-700"
-                    }`}
-                  >
-                    {assessment.status}
-                  </span>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs ${
+                        assessment.risk === "HIGH"
+                          ? "bg-red-100 text-red-600"
+                          : assessment.risk === "MEDIUM"
+                          ? "bg-orange-100 text-orange-600"
+                          : "bg-green-100 text-green-600"
+                      }`}
+                    >
+                      {assessment.risk || "LOW"}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
-                  {/* Risk Badge */}
-                  <span
-                    className={`ml-2 inline-block px-3 py-1 text-xs rounded-full ${
-                      risk === "HIGH"
-                        ? "bg-red-100 text-red-700"
-                        : risk === "MEDIUM"
-                        ? "bg-orange-100 text-orange-700"
-                        : "bg-green-100 text-green-700"
-                    }`}
-                  >
-                    {risk} Risk
-                  </span>
-                </div>
-
-                {/* RIGHT ACTIONS */}
-                <div className="flex gap-4 text-indigo-600">
-                  <Pencil size={20} />
-                </div>
-              </div>
-            );
-          })}
-
-          {filteredAssessments.length === 0 && (
-            <div className="text-gray-500">No assessments found.</div>
+          {isLoading && (
+            <div className="p-4 text-center text-gray-500">
+              Loading...
+            </div>
           )}
         </div>
+      </div>
 
-        {/* PAGINATION */}
-        {totalPages > 1 && (
-          <div className="flex justify-center gap-2 mt-6">
-            {[...Array(totalPages)].map((_, index) => (
+      {/* ================= Modal ================= */}
+      {openModal && (
+        <div className="fixed inset-0 bg-gray-300/30 flex items-center justify-center">
+          <div className="bg-white rounded-lg shadow-lg w-96 p-6 space-y-4">
+            <h2 className="text-lg font-semibold">
+              Create Assessment
+            </h2>
+
+            {/* Company */}
+            <select
+              className="w-full border px-3 py-2 rounded-md"
+              value={selectedCompany}
+              onChange={(e) => setSelectedCompany(e.target.value)}
+            >
+              <option value="">Select Company</option>
+              {companies?.map((company) => (
+                <option key={company.id} value={company.id}>
+                  {company.name}
+                </option>
+              
+              ))}
+            </select>
+
+            {/* Checklist */}
+            <select
+              className="w-full border px-3 py-2 rounded-md"
+              value={selectedChecklist}
+              onChange={(e) => setSelectedChecklist(e.target.value)}
+            >
+              <option value="">Select Checklist</option>
+              {checklists?.map((checklist) => (
+                <option key={checklist.id} value={checklist.id}>
+                  {checklist.name}
+                </option>
+              ))}
+            </select>
+
+            {/* Status */}
+            <select
+              className="w-full border px-3 py-2 rounded-md"
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+            >
+              <option value="">Select Status</option>
+              <option value="DRAFT">DRAFT</option>
+              <option value="IN_PROGRESS">IN PROGRESS</option>
+              <option value="COMPLETED">COMPLETED</option>
+            </select>
+
+            <div className="flex justify-end gap-3 pt-2">
               <button
-                key={index}
-                onClick={() => setCurrentPage(index + 1)}
-                className={`px-3 py-1 rounded ${
-                  currentPage === index + 1
-                    ? "bg-indigo-600 text-white"
-                    : "bg-gray-200"
+                onClick={() => setOpenModal(false)}
+                className="px-4 py-2 border rounded-md"
+              >
+                Cancel
+              </button>
+
+              <button
+                disabled={
+                  !selectedCompany ||
+                  !selectedChecklist ||
+                  creating
+                }
+                onClick={handleCreate}
+                className={`px-4 py-2 rounded-md text-white ${
+                  !selectedCompany || !selectedChecklist
+                    ? "bg-gray-400"
+                    : "bg-indigo-600 hover:bg-indigo-700"
                 }`}
               >
-                {index + 1}
+                {creating ? "Creating..." : "Create"}
               </button>
-            ))}
+            </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </AppLayout>
   );
 };
