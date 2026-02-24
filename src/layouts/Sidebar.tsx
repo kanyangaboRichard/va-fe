@@ -59,7 +59,7 @@ const Sidebar = () => {
         </NavLink>
 
         <NavLink
-          to="/Checklists"
+          to="/ChecklistPage"
           className={({ isActive }) =>
             `flex items-center gap-3 rounded-md px-3 py-2 text-sm
              ${isActive ? "bg-slate-800 text-white" : "text-slate-300 hover:bg-slate-800"}`
