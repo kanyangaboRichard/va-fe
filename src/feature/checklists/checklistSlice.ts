@@ -1,10 +1,11 @@
 import { createAsyncThunk, createSlice, } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { Checklist, CreateChecklistDto, UpdateChecklistDto } from "./checklistAPI";
-import { getChecklists, createChecklist, updateChecklist, deleteChecklist } from "./checklistAPI";
+import type { Checklists, CreateChecklistDto, UpdateChecklistDto } from "../../api/checklistAPI";
+import { getChecklists, createChecklist, updateChecklist, deleteChecklist } from "../../api/checklistAPI";
 
 type ChecklistState = {
-  items: Checklist[];
+  data: Checklists[];
+  items: Checklists[];
   isLoading: boolean;
   error: string | null;
   search: string;
@@ -15,6 +16,7 @@ const initialState: ChecklistState = {
   isLoading: false,
   error: null,
   search: "",
+  data: []
 };
 
 export const fetchChecklists = createAsyncThunk("checklists/fetchAll", async () => {

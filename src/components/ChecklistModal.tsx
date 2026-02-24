@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Checklist, ChecklistStatus } from "../feature/checklists/checklistAPI";
+import type { Checklist, ChecklistStatus } from "../api/checklistAPI";
 
 type Props = {
   open: boolean;

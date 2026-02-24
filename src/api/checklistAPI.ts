@@ -1,9 +1,9 @@
 
-import  axios  from "../../api/Axios";
+import  axios  from "./Axios";
 
 export type ChecklistStatus = "ACTIVE" | "DRAFT" | "ARCHIVED";
 
-export interface Checklist {
+export interface Checklists {
   id: string;
   name: string;
   description?: string | null;
@@ -26,17 +26,17 @@ export interface UpdateChecklistDto {
   status?: ChecklistStatus;
 }
 
-export async function getChecklists(): Promise<Checklist[]> {
+export async function getChecklists(): Promise<Checklists[]> {
   const res = await axios.get("/checklists");
   return res.data;
 }
 
-export async function createChecklist(payload: CreateChecklistDto): Promise<Checklist> {
+export async function createChecklist(payload: CreateChecklistDto): Promise<Checklists> {
   const res = await axios.post("/checklists", payload);
   return res.data;
 }
 
-export async function updateChecklist(id: string, payload: UpdateChecklistDto): Promise<Checklist> {
+export async function updateChecklist(id: string, payload: UpdateChecklistDto): Promise<Checklists> {
   const res = await axios.patch(`/checklists/${id}`, payload);
   return res.data;
 }

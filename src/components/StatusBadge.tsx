@@ -1,5 +1,5 @@
 // src/components/StatusBadge.tsx
-import type { ChecklistStatus } from "../feature/checklists/checklistAPI";
+import type { ChecklistStatus } from "../api/checklistAPI";
 
 export default function StatusBadge({ status }: { status: ChecklistStatus }) {
   const styles =

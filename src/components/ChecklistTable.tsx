@@ -1,6 +1,6 @@
 // src/components/ChecklistTable.tsx
 import StatusBadge from "./StatusBadge";
-import type { Checklist } from "../feature/checklists/checklistAPI";
+import type { Checklist } from "../api/checklistAPI";
 
 type Props = {
   items: Checklist[];

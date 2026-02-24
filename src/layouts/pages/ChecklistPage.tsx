@@ -6,7 +6,7 @@ import ChecklistModal from "../../components/ChecklistModal";
 import { useAppDispatch } from "../../feature/hooks/useAppDispatch";
 import { useAppSelector } from "../../feature/hooks/useAppSelector";
 import {fetchChecklists,addChecklist,editChecklist,removeChecklist,setChecklistSearch,} from "../../feature/checklists/checklistSlice";
-import type { Checklist } from "../../feature/checklists/checklistAPI";
+import type { Checklists } from "../../api/checklistAPI";
 
 export default function ChecklistPage() {
   const dispatch = useAppDispatch();
@@ -15,7 +15,7 @@ export default function ChecklistPage() {
   const { items, isLoading, error, search } = useAppSelector((s) => s.checklists);
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [editing, setEditing] = useState<Checklist | null>(null);
+  const [editing, setEditing] = useState<Checklists | null>(null);
 
   useEffect(() => {
     dispatch(fetchChecklists());
@@ -36,7 +36,7 @@ export default function ChecklistPage() {
     setModalOpen(true);
   };
 
-  const openEdit = (item: Checklist) => {
+  const openEdit = (item: Checklists) => {
     setEditing(item);
     setModalOpen(true);
   };
