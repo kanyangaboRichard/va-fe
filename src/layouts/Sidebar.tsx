@@ -5,7 +5,6 @@ import { useAuthStore } from "../../src/feature/store/authStore";
 import { LayoutDashboard } from "lucide-react";
 import { ListTodo } from "lucide-react";
 import { Settings } from "lucide-react";
-import {FileDown} from "lucide-react";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -20,7 +19,7 @@ const Sidebar = () => {
     <aside className="w-64 h-screen bg-slate-900 text-slate-100 flex flex-col">
       {/* Logo */}
       <div className="px-6 py-5 text-xl font-bold text-indigo-200">
-        VA Platform
+        Vulnerability Platform
       </div>
 
       {/* Navigation */}
@@ -60,7 +59,7 @@ const Sidebar = () => {
         </NavLink>
 
         <NavLink
-          to="/Checklists"
+          to="/ChecklistPage"
           className={({ isActive }) =>
             `flex items-center gap-3 rounded-md px-3 py-2 text-sm
              ${isActive ? "bg-slate-800 text-white" : "text-slate-300 hover:bg-slate-800"}`
@@ -70,21 +69,6 @@ const Sidebar = () => {
           Checklists
         </NavLink>
 
-
-        <NavLink
-        to="/Reports"
-        className={({ isActive }) =>
-          `flex items-center gap-3 rounded-md px-3 py-2 text-sm
-           ${isActive ? "bg-slate-800 text-white" : "text-slate-300 hover:bg-slate-800"}`
-        }
-      >
-        <FileDown className="h-5 w-5" />
-        Reports
-      </NavLink>
-
-
-
-
         <NavLink
           to="/settings"
           className={({ isActive }) =>
@@ -93,11 +77,9 @@ const Sidebar = () => {
           }
         >
           <Settings className="h-5 w-5" />
-          Audit trails
+          Settings
         </NavLink>
       </nav>
-
-      
 
       {/* User / Logout */}
       {user && (

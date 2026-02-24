@@ -11,7 +11,7 @@ export const createAssessmentAPI = async (data: {
   companyId: string;
   conductedById: string;
 }) => {
-  const res = await axios.post("/assessments", data);
+  const res = await axios.post("/api/assessments", data);
   return res.data;
 };
 
@@ -19,6 +19,6 @@ export const updateAssessmentStatusAPI = async (
   id: string,
   status: string
 ) => {
-  const res = await axios.patch(`/assessments/${id}/status`, { status });
+  const res = await axios.patch(`/api/assessments/${id}/status`, { status });
   return res.data;
 };
