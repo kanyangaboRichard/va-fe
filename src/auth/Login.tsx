@@ -75,7 +75,7 @@ const Login = () => {
           </h2>
 
           <p className="mt-1 text-sm text-slate-500">
-            Vulnerability Assessment Platform
+            VA Platform
           </p>
         </div>
 
