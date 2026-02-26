@@ -52,6 +52,7 @@ const CompanyForm: React.FC<Props> = ({
       contactEmail,
       contactPhone,
       address,
+      location: undefined
     });
   };
 
