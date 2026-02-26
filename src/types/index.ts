@@ -1,5 +1,9 @@
 
 export interface Company {
+  address: ReactNode;
+  contactEmail: ReactNode;
+  contactPhone: ReactNode;
+  location: ReactNode;
   id: string;
   name: string;
   industry?: string;

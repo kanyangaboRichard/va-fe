@@ -10,8 +10,13 @@ const CompanyCard = ({ company, onEdit }: Props) => {
   return (
     <div className="bg-white shadow rounded-lg p-4 flex justify-between">
       <div>
-        <h3 className="font-semibold text-lg">{company.name}</h3>
-        <p className="text-sm text-gray-500">{company.industry}</p>
+        <h3 className="font-semibold text-lg">Company name: {company.name}</h3>
+        <p className="text-sm text-gray-500">Industry: {company.industry}</p>
+        <p className="text-sm text-gray-500">Date of creation: {company.createdAt} </p>
+        <p className="text-sm text-gray-500">Address: {company.address}</p>
+        <p className="text-sm text-gray-500">Email: {company.contactEmail}</p>
+        <p className="text-sm text-gray-500">Phone: {company.contactPhone}</p>
+
       </div>
 
       <button onClick={onEdit} className="text-indigo-600">

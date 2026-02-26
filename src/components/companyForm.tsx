@@ -19,16 +19,25 @@ const CompanyForm: React.FC<Props> = ({
   const [name, setName] = useState("");
   const [industry, setIndustry] = useState("");
   const [description, setDescription] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
+  const [contactPhone, setContactPhone] = useState("");
+  const [address, setAddress] = useState("");
 
   useEffect(() => {
     if (company) {
       setName(company.name);
       setIndustry(company.industry || "");
       setDescription(company.description || "");
+      setContactEmail(company.contactEmail || "");
+      setContactPhone(company.contactPhone || "");
+      setAddress(company.address || "");
     } else {
       setName("");
       setIndustry("");
       setDescription("");
+      setContactEmail("");
+      setContactPhone("");
+      setAddress("");
     }
   }, [company]);
 
@@ -40,6 +49,9 @@ const CompanyForm: React.FC<Props> = ({
       name,
       industry,
       description,
+      contactEmail,
+      contactPhone,
+      address,
     });
   };
 
@@ -71,6 +83,24 @@ const CompanyForm: React.FC<Props> = ({
             placeholder="Description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+          />
+          <input
+            className="w-full border rounded px-3 py-2"
+            placeholder="Contact Email" 
+            value={contactEmail}
+            onChange={(e) => setContactEmail(e.target.value)}
+          />
+          <input
+            className="w-full border rounded px-3 py-2"
+            placeholder="Contact Phone" 
+            value={contactPhone}  
+            onChange={(e) => setContactPhone(e.target.value)}
+          />
+          <input
+            className="w-full border rounded px-3 py-2"
+            placeholder="Address"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
           />
 
           <div className="flex justify-end gap-3">

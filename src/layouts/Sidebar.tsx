@@ -38,18 +38,7 @@ const Sidebar = () => {
         </NavLink>
 
         <NavLink
-          to="/companyPage"
-          className={({ isActive }) =>
-            `flex items-center gap-3 rounded-md px-3 py-2 text-sm
-             ${isActive ? "bg-slate-800 text-white" : "text-slate-300 hover:bg-slate-800"}`
-          }
-        >
-          <Building2 className="h-5 w-5" />
-          Companies
-        </NavLink>
-
-        <NavLink
-          to="/assessmentPage"
+          to="/AssessmentPage"
           className={({ isActive }) =>
             `flex items-center gap-3 rounded-md px-3 py-2 text-sm
              ${isActive ? "bg-slate-800 text-white" : "text-slate-300 hover:bg-slate-800"}`
@@ -60,19 +49,32 @@ const Sidebar = () => {
         </NavLink>
 
         <NavLink
+          to="/CompanyPage"
+          className={({ isActive }) =>
+            `flex items-center gap-3 rounded-md px-3 py-2 text-sm
+             ${isActive ? "bg-slate-800 text-white" : "text-slate-300 hover:bg-slate-800"}`
+          } 
+
+        >
+          <Building2 className="h-5 w-5" />
+          Companies
+        </NavLink>
+
+        <NavLink
           to="/Checklists"
           className={({ isActive }) =>
             `flex items-center gap-3 rounded-md px-3 py-2 text-sm
              ${isActive ? "bg-slate-800 text-white" : "text-slate-300 hover:bg-slate-800"}`
           }
         >
+        
           <ListTodo className="h-5 w-5" />
           Checklists
         </NavLink>
 
 
         <NavLink
-        to="/Reports"
+        to="/ReportsPage"
         className={({ isActive }) =>
           `flex items-center gap-3 rounded-md px-3 py-2 text-sm
            ${isActive ? "bg-slate-800 text-white" : "text-slate-300 hover:bg-slate-800"}`
@@ -82,11 +84,8 @@ const Sidebar = () => {
         Reports
       </NavLink>
 
-
-
-
         <NavLink
-          to="/settings"
+          to="/AuditTrailsPage"
           className={({ isActive }) =>
             `flex items-center gap-3 rounded-md px-3 py-2 text-sm
              ${isActive ? "bg-slate-800 text-white" : "text-slate-300 hover:bg-slate-800"}`
