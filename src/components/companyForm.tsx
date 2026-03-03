@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import type { Company } from "../../src/types";
+import type { Company } from "../types";
 
 interface Props {
   company?: Company;
@@ -28,9 +28,9 @@ const CompanyForm: React.FC<Props> = ({
       setName(company.name);
       setIndustry(company.industry || "");
       setDescription(company.description || "");
-      setContactEmail(company.contactEmail || "");
-      setContactPhone(company.contactPhone || "");
-      setAddress(company.address || "");
+      setContactEmail(String(company.contactEmail || ""));
+      setContactPhone(String(company.contactPhone || ""));
+      setAddress(String(company.address || ""));
     } else {
       setName("");
       setIndustry("");

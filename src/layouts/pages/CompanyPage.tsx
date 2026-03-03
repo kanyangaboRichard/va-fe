@@ -4,8 +4,8 @@ import { toast } from "react-hot-toast";
 import { useAppDispatch } from "../../feature/hooks/useAppDispatch";
 import { useAppSelector } from "../../feature/hooks/useAppSelector";
 import {fetchCompanies,addCompany,updateCompany,} from "../../feature/company/companySlice";
-import CompanyCard from "../../components/companyCard";
-import CompanyForm from "../../components/companyForm";
+import CompanyCard from "../../components/CompanyCard";
+import CompanyForm from "../../components/CompanyForm";
 import type{ Company } from "../../types";
 import AppLayout from "../../layouts/appLayout";
 

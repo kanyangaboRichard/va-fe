@@ -1,4 +1,4 @@
-import type { Company } from "../../src/types";
+import type { Company } from "../types";
 import { Pencil } from "lucide-react";
 
 interface Props {
