@@ -4,9 +4,8 @@ import Login  from "../auth/Login";
 import CompanyPage from "../layouts/pages/CompanyPage";
 import AssessmentPage from "../layouts/pages/AssessmentPage";
 import ChecklistPage from "../layouts/pages/ChecklistPage";
-
+import ChecklistDomainPage from "../layouts/pages/ChecklistDomainPage";
 // import { AssessmentForm } from "../assessments/AssessmentForm"; // later
-//import DomainPage from "../feature/domain/DomainPage();
 
 
 export const router = createBrowserRouter([
@@ -15,6 +14,6 @@ export const router = createBrowserRouter([
   {path:"/companyPage", element: <CompanyPage />},
   {path:"/AssessmentPage", element: <AssessmentPage />},
   {path:"/checklists", element: <ChecklistPage />},
-  // { path: "/domains", element: <DomainPage /> },
+  {path:"/checklists/:checklistId/domains", element: <ChecklistDomainPage />},
   // { path: "/app", element: <AssessmentForm /> },
 ]);
