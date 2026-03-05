@@ -34,7 +34,7 @@ export default function DomainRow({
       setLoadingDelete(true);
 
       await apiClient.delete(
-        `/checklists/${checklistId}/domains/${domain.id}`
+        `/domains/${domain.id}`
       );
 
       onChanged();
@@ -52,7 +52,7 @@ export default function DomainRow({
     description?: string;
   }) => {
     await apiClient.put(
-      `/checklists/${checklistId}/domains/${domain.id}`,
+      `/domains/${domain.id}`,
       {
         name: data.name,
         description: data.description || "",

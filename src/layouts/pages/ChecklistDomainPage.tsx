@@ -237,7 +237,8 @@ export default function ChecklistDomainPage() {
                   key={d.id}
                   domain={d}
                   index={(currentPage - 1) * itemsPerPage + index}
-                  onChanged={fetchAll} checklistId={""}                />
+                  onChanged={fetchAll} 
+                  checklistId={checklist?.id || ""}                />
               ))}
             </div>
 

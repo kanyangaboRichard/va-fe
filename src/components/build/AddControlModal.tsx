@@ -11,7 +11,6 @@ type Props = {
 
 export default function AddControlModal({
   open,
-  checklistId,
   domainId,
   onClose,
   onSaved,
@@ -57,7 +56,7 @@ export default function AddControlModal({
       setError(null);
 
       await apiClient.post(
-        `/checklists/${checklistId}/domains/${domainId}/controls`,
+        `/domains/${domainId}/controls`,
         {
           code: code.trim(),
           title: title.trim(),
