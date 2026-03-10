@@ -19,7 +19,7 @@ const Assessments = () => {
   );
 
   const { companies } = useAppSelector((state) => state.companies);
-  const checklists = useAppSelector((state) => state.checklists.items);
+  const checklists = useAppSelector((state) => state.checklists.data || state.checklists.items || []);
 
   
   // Local State
@@ -28,7 +28,7 @@ const Assessments = () => {
 
   const [openModal, setOpenModal] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState("");
-  const [selectedChecklists, setSelectedChecklists] = useState("");
+  const [selectedChecklist, setSelectedChecklist] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
   const [creating, setCreating] = useState(false);
 
@@ -43,7 +43,7 @@ const Assessments = () => {
   
   // Create Assessment
   const handleCreate = async () => {
-    if (!selectedCompany || !selectedChecklists) return;
+    if (!selectedCompany || !selectedChecklist) return;
 
     try {
       setCreating(true);
@@ -51,7 +51,7 @@ const Assessments = () => {
       const result = await dispatch(
         createAssessment({
           companyId: selectedCompany,
-          checklistId: selectedChecklists,
+          checklistId: selectedChecklist,
           name: ""
         })
       );
@@ -98,7 +98,7 @@ const Assessments = () => {
             onClick={() => setOpenModal(true)}
             className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition"
           >
-            New Assessment
+            + New Assessment
           </button>
         </div>
 
@@ -234,8 +234,8 @@ const Assessments = () => {
             {/* Checklist */}
             <select
               className="w-full border px-3 py-2 rounded-md"
-              value={selectedChecklists}
-              onChange={(e) => setSelectedChecklists(e.target.value)}
+              value={selectedChecklist}
+              onChange={(e) => setSelectedChecklist(e.target.value)}
             >
               <option value="">Select Checklist</option>
               {checklists?.map((checklist) => (
@@ -268,12 +268,12 @@ const Assessments = () => {
               <button
                 disabled={
                   !selectedCompany ||
-                  !selectedChecklists ||
+                  !selectedChecklist ||
                   creating
                 }
                 onClick={handleCreate}
                 className={`px-4 py-2 rounded-md text-white ${
-                  !selectedCompany || !selectedChecklists
+                  !selectedCompany || !selectedChecklist
                     ? "bg-gray-400"
                     : "bg-indigo-600 hover:bg-indigo-700"
                 }`}

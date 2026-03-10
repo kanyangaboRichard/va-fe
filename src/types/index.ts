@@ -1,12 +1,5 @@
-import type { ReactNode } from "react";
 
 export interface Company {
-  email: any;
-  phone: any;
-  address: ReactNode;
-  contactEmail: ReactNode;
-  contactPhone: ReactNode;
-  location: ReactNode;
   id: string;
   name: string;
   industry?: string;
