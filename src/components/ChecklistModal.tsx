@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import type { Checklist, ChecklistStatus } from "../api/checklistAPI";
+import type { Checklists, ChecklistStatus } from "../api/checklistAPI";
 
 type Props = {
   open: boolean;
   onClose: () => void;
   onSubmit: (data: { name: string; description?: string | null; status: ChecklistStatus }) => void;
-  initial?: Checklist | null;
+  initial?: Checklists | null;
   title: string;
 };
 
