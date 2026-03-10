@@ -2,10 +2,8 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { Building2, ClipboardList, LogOut,} from "lucide-react";
 import { useAuthStore } from "../../src/feature/store/authStore";
 //import Assessments from "./pages/AssessmentPage";
-import { LayoutDashboard } from "lucide-react";
-import { ListTodo } from "lucide-react";
-import { Settings } from "lucide-react";
-import {FileDown} from "lucide-react";
+import { LayoutDashboard,ListTodo,Settings,FileDown, CircleArrowOutDownRight } from "lucide-react";
+
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -72,6 +70,18 @@ const Sidebar = () => {
           Checklists
         </NavLink>
 
+        <NavLink
+        to="/findings"
+        className={({ isActive }) =>
+          `flex items-center gap-3 rounded-md px-3 py-2 text-sm
+           ${isActive ? "bg-slate-800 text-white" : "text-slate-300 hover:bg-slate-800"}`
+        }
+      >
+        <CircleArrowOutDownRight className="h-5 w-5" />
+      External Findings
+      </NavLink>
+      
+
 
         <NavLink
         to="/ReportsPage"
@@ -95,8 +105,6 @@ const Sidebar = () => {
           Audit trails
         </NavLink>
       </nav>
-
-      
 
       {/* User / Logout */}
       {user && (

@@ -163,7 +163,7 @@ export default function ChecklistDomainPage() {
               className="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700"
             >
               {previewMode
-                ? "Back to Edit"
+                ? "Back to Checklists"
                 : "Preview"}
             </button>
           </div>

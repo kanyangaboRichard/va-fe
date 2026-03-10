@@ -1,11 +1,10 @@
 // src/components/ChecklistTable.tsx
 import StatusBadge from "./StatusBadge";
-import type { Checklist } from "../api/checklistAPI";
 
 type Props = {
-  items: Checklist[];
+  items: any[];
   onOpenDomains: (checklistId: string) => void;
-  onEdit: (item: Checklist) => void;
+  onEdit: (item: any) => void;
   onDelete: (id: string) => void;
 };
 
