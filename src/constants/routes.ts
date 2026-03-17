@@ -4,4 +4,5 @@ export const ROUTES = {
   ASSESSMENTS: "/AssessmentPage",
   COMPANYPAGE: "/companyPage",
   CHECKLISTS: "/checklists",
+  USERS: "/Users",
 };
