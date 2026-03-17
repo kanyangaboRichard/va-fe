@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Clipboard } from "lucide-react";
-import AppLayout from "../../layouts/appLayout";
-import { useAppDispatch } from "../../feature/hooks/useAppDispatch";
-import { useAppSelector } from "../../feature/hooks/useAppSelector";
-import {fetchAssessments,createAssessment,} from "../../feature/assessments/assessmentSlice";
-import { fetchCompanies } from "../../feature/company/companySlice";
-import { fetchChecklists } from "../../feature/checklists/checklistSlice";
+import AppLayout from "../../appLayout";
+import { useAppDispatch } from "../../../feature/hooks/useAppDispatch";
+import { useAppSelector } from "../../../feature/hooks/useAppSelector";
+import {fetchAssessments,createAssessment,} from "../../../feature/assessments/assessmentSlice";
+import { fetchCompanies } from "../../../feature/company/companySlice";
+import { fetchChecklists } from "../../../feature/checklists/checklistSlice";
 
 const Assessments = () => {
   const dispatch = useAppDispatch();

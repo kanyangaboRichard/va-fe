@@ -2,13 +2,13 @@ import { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
 import { toast } from "react-hot-toast";
 import Select from "react-select";
-import { useAppDispatch } from "../../feature/hooks/useAppDispatch";
-import { useAppSelector } from "../../feature/hooks/useAppSelector";
-import {fetchCompanies,addCompany,updateCompany,} from "../../feature/company/companySlice";
-import CompanyCard from "../../components/CompanyCard";
-import CompanyForm from "../../components/CompanyForm";
-import type { Company } from "../../types";
-import AppLayout from "../../layouts/appLayout";
+import { useAppDispatch } from "../../../feature/hooks/useAppDispatch";
+import { useAppSelector } from "../../../feature/hooks/useAppSelector";
+import {fetchCompanies,addCompany,updateCompany,} from "../../../feature/company/companySlice";
+import CompanyCard from "../../../components/companyCard";
+import CompanyForm from "../../../components/companyForm";
+import type { Company } from "../../../types";
+import AppLayout from "../../appLayout";
 
 type Option = {
   value: string;
