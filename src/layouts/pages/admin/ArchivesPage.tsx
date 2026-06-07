@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
-import { Archive, RotateCcw, Loader2, ClipboardList, Users } from "lucide-react";
+import { Archive, RotateCcw, Loader2, ClipboardList, Users, FileSearch } from "lucide-react";
 import apiClient from "../../../api/Axios";
 import AppLayout from "../../appLayout";
 
@@ -21,8 +21,23 @@ interface ArchivedUser {
   updatedAt: string;
 }
 
+interface ArchivedFinding {
+  id: string;
+  title: string;
+  severity: string;
+  createdAt: string;
+  assessment?: { id: string; name: string; company?: { name: string } };
+}
+
+const SEVERITY_COLORS: Record<string, string> = {
+  CRITICAL: "bg-red-100 text-red-700 border-red-200",
+  HIGH:     "bg-orange-100 text-orange-700 border-orange-200",
+  MEDIUM:   "bg-amber-100 text-amber-700 border-amber-200",
+  LOW:      "bg-emerald-100 text-emerald-700 border-emerald-200",
+};
+
 export default function ArchivesPage() {
-  const [activeTab, setActiveTab] = useState<"checklists" | "users">("checklists");
+  const [activeTab, setActiveTab] = useState<"checklists" | "users" | "findings">("checklists");
 
   const [checklists, setChecklists] = useState<ArchivedChecklist[]>([]);
   const [checklistsLoading, setChecklistsLoading] = useState(true);
@@ -33,6 +48,10 @@ export default function ArchivesPage() {
   const [usersLoading, setUsersLoading] = useState(true);
   const [usersError, setUsersError] = useState<string | null>(null);
   const [restoringUserId, setRestoringUserId] = useState<string | null>(null);
+
+  const [archivedFindings, setArchivedFindings] = useState<ArchivedFinding[]>([]);
+  const [findingsLoading, setFindingsLoading] = useState(true);
+  const [findingsError, setFindingsError] = useState<string | null>(null);
 
   const fetchArchived = async () => {
     try {
@@ -60,9 +79,23 @@ export default function ArchivesPage() {
     }
   };
 
+  const fetchArchivedFindings = async () => {
+    try {
+      setFindingsLoading(true);
+      const res = await apiClient.get("/technical-findings/archived");
+      const data = Array.isArray(res.data) ? res.data : res.data?.data ?? [];
+      setArchivedFindings(data);
+    } catch (err: any) {
+      setFindingsError(err?.response?.data?.message || "Failed to load archived findings.");
+    } finally {
+      setFindingsLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchArchived();
     fetchArchivedUsers();
+    fetchArchivedFindings();
   }, []);
 
   const handleRestoreChecklist = async (id: string) => {
@@ -92,8 +125,9 @@ export default function ArchivesPage() {
   };
 
   const tabs = [
-    { key: "checklists", label: "Checklists", count: checklists.length, icon: ClipboardList },
-    { key: "users", label: "Users", count: archivedUsers.length, icon: Users },
+    { key: "checklists", label: "Checklists", count: checklists.length,       icon: ClipboardList },
+    { key: "users",      label: "Users",       count: archivedUsers.length,    icon: Users        },
+    { key: "findings",   label: "Findings",    count: archivedFindings.length, icon: FileSearch   },
   ];
 
   return (
@@ -301,6 +335,70 @@ export default function ArchivesPage() {
                           )}
                           Restore
                         </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* FINDINGS TAB */}
+      {activeTab === "findings" && (
+        <>
+          {findingsLoading && (
+            <div className="flex flex-col items-center justify-center py-24 gap-3 text-gray-400">
+              <Loader2 className="w-7 h-7 animate-spin text-indigo-400" />
+              <p className="text-sm">Loading archived findings…</p>
+            </div>
+          )}
+          {!findingsLoading && findingsError && (
+            <div className="rounded-lg border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-600">
+              {findingsError}
+            </div>
+          )}
+          {!findingsLoading && !findingsError && archivedFindings.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-24 gap-3 text-center">
+              <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center">
+                <FileSearch className="w-7 h-7 text-gray-400" />
+              </div>
+              <p className="text-sm font-semibold text-gray-700">No archived findings</p>
+              <p className="text-xs text-gray-400 max-w-xs">
+                Findings are archived automatically when a report is sent to the client.
+              </p>
+            </div>
+          )}
+          {!findingsLoading && !findingsError && archivedFindings.length > 0 && (
+            <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                  <tr>
+                    <th className="px-5 py-4 text-left font-semibold text-gray-600">Title</th>
+                    <th className="px-5 py-4 text-left font-semibold text-gray-600">Severity</th>
+                    <th className="px-5 py-4 text-left font-semibold text-gray-600">Assessment</th>
+                    <th className="px-5 py-4 text-left font-semibold text-gray-600">Company</th>
+                    <th className="px-5 py-4 text-left font-semibold text-gray-600">Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {archivedFindings.map((f) => (
+                    <tr key={f.id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition">
+                      <td className="px-5 py-4 font-medium text-gray-800">{f.title}</td>
+                      <td className="px-5 py-4">
+                        <span className={`text-xs px-2.5 py-1 rounded-full border font-medium ${
+                          SEVERITY_COLORS[f.severity] ?? "bg-gray-100 text-gray-500 border-gray-200"
+                        }`}>
+                          {f.severity ?? "—"}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4 text-gray-500">{f.assessment?.name ?? "—"}</td>
+                      <td className="px-5 py-4 text-gray-500">{f.assessment?.company?.name ?? "—"}</td>
+                      <td className="px-5 py-4 text-xs text-gray-400">
+                        {new Date(f.createdAt).toLocaleDateString("en-GB", {
+                          day: "numeric", month: "short", year: "numeric",
+                        })}
                       </td>
                     </tr>
                   ))}
