@@ -135,7 +135,7 @@ const Login = () => {
                 ISCO Technologies
               </span>
               <span style={{ display: "block", fontSize: 14, fontWeight: 700 }}>
-                ISCO-TECH VA
+                ISCO-TECH VULNERABILITY ASSESSMENT PLATFORM
               </span>
             </div>
           </div>
