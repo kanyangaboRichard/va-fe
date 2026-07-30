@@ -19,13 +19,6 @@ type Finding = {
   createdAt: string;
 };
 
-const severityStyles: Record<string, string> = {
-  CRITICAL: "bg-red-50 text-red-700 border-red-200",
-  HIGH: "bg-orange-50 text-orange-700 border-orange-200",
-  MEDIUM: "bg-amber-50 text-amber-700 border-amber-200",
-  LOW: "bg-emerald-50 text-emerald-700 border-emerald-200",
-};
-
 export default function AssessmentReportsListPage() {
   const navigate = useNavigate();
   const { assessmentId } = useParams();
@@ -116,12 +109,7 @@ export default function AssessmentReportsListPage() {
                   <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">
                     Finding
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">
-                    Category
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">
-                    Severity
-                  </th>
+                 
                   <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">
                     Date
                   </th>
@@ -163,10 +151,6 @@ export default function AssessmentReportsListPage() {
                   </tr>
                 ) : (
                   filtered.map((finding) => {
-                    const severityClass =
-                      severityStyles[finding.severity] ||
-                      severityStyles.LOW;
-
                     return (
                       <tr
                         key={finding.id}
@@ -183,27 +167,6 @@ export default function AssessmentReportsListPage() {
                             </p>
                           </div>
                         </td>
-
-                        {/* CATEGORY */}
-                        <td className="px-6 py-5">
-                          {finding.category ? (
-                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border bg-indigo-50 text-indigo-700 border-indigo-200">
-                              {finding.category}
-                            </span>
-                          ) : (
-                            <span className="text-gray-400 text-xs">—</span>
-                          )}
-                        </td>
-
-                        {/* SEVERITY */}
-                        <td className="px-6 py-5">
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium border ${severityClass}`}
-                          >
-                            {finding.severity}
-                          </span>
-                        </td>
-
                         {/* DATE */}
                         <td className="px-6 py-5 text-gray-500">
                           {new Date(finding.createdAt).toLocaleString(

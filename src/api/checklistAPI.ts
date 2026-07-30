@@ -47,9 +47,9 @@ export interface UpdateChecklistDto {
 
 // GET ALL
 
-export async function getChecklists(): Promise<Checklists[]> {
+export async function getChecklists(includeArchived = false): Promise<Checklists[]> {
   const res = await axios.get(
-    "/checklists"
+    "/checklists", { params: { includeArchived }, }
   );
 
   return res.data;

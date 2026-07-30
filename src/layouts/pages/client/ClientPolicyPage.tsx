@@ -1,18 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  ShieldCheck,
-  FileText,
-  Lock,
-  CheckCircle2,
-  UserCheck,
-  Globe,
-  Scale,
-  Clock,
-  AlertTriangle,
-  RefreshCw,
-  ClipboardList,
-} from "lucide-react";
+import {ShieldCheck,FileText,Lock,CheckCircle2,UserCheck,Globe,Scale,Clock,AlertTriangle,RefreshCw,ClipboardList,} from "lucide-react";
 import { useAuthStore } from "../../../feature/store/authStore";
 
 const PRIVACY_CARDS = [
@@ -26,7 +14,7 @@ const PRIVACY_CARDS = [
     icon: FileText,
     title: "Why We Use Your Data",
     description:
-      "To manage accounts, enable assessments, generate audit-ready reports, provide support, and comply with legal or regulatory obligations.",
+      "To manage accounts, enable assessments, generate audit ready reports, provide support, and comply with legal or regulatory obligations.",
   },
   {
     icon: UserCheck,
@@ -36,7 +24,7 @@ const PRIVACY_CARDS = [
   },
   {
     icon: Globe,
-    title: "Data Stays in Rwanda",
+    title: "Data Storage",
     description:
       "All data is stored and processed within Rwanda. We do not transfer your data outside the country without informing you and applying appropriate safeguards.",
   },
@@ -44,11 +32,11 @@ const PRIVACY_CARDS = [
     icon: Lock,
     title: "How We Protect Your Data",
     description:
-      "Secure authentication, role-based access, encrypted transmission, system monitoring, audit logs, and regular backups protect your data at every stage.",
+      "Secure authentication, role based access, encrypted transmission, system monitoring, audit logs, and regular backups protect your data at every stage.",
   },
   {
     icon: ShieldCheck,
-    title: "Your Rights",
+    title: "Subject Rights",
     description:
       "You may access, correct, or delete your data, object to processing, withdraw consent, restrict processing, or request information on how your data is used.",
   },
@@ -66,7 +54,7 @@ const PRIVACY_CARDS = [
   },
   {
     icon: ClipboardList,
-    title: "Your Responsibilities",
+    title: "User Responsibilities",
     description:
       "Ensure data you upload is accurate, relevant, and lawfully obtained. Do not submit personal or confidential information unless it is necessary for the assessment.",
   },
