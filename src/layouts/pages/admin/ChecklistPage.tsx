@@ -24,7 +24,7 @@ export default function ChecklistPage() {
   const [statusFilter, setStatusFilter] = useState<"ALL" | "INACTIVE" | "ACTIVE" | "ARCHIVED">("ALL");
 
   useEffect(() => {
-    dispatch(fetchChecklists());
+    dispatch(fetchChecklists(false));
   }, [dispatch]);
 
   // DERIVED COUNTS
@@ -80,7 +80,7 @@ const filtered = useMemo(() => {
           addChecklist({ name: data.name, description: data.description })
         ).unwrap();
       }
-      dispatch(fetchChecklists());
+      dispatch(fetchChecklists(false));
       setModalOpen(false);
       setEditing(null);
     } catch (err) {
@@ -94,7 +94,7 @@ const filtered = useMemo(() => {
   if (!ok) return;
   try {
     await ApiClient.patch(`/checklists/${id}/archive`);
-    dispatch(fetchChecklists());
+    dispatch(fetchChecklists(false));
   } catch (err: any) {
     console.error("Error archiving checklist:", err);
     window.alert(err?.response?.data?.message || "Failed to archive checklist.");
@@ -210,7 +210,7 @@ const filtered = useMemo(() => {
 
             {/* REFRESH */}
             <button
-              onClick={() => dispatch(fetchChecklists())}
+              onClick={() => dispatch(fetchChecklists(false))}
               title="Refresh"
               className="p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors border border-gray-200"
             >

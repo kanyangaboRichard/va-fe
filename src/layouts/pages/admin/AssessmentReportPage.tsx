@@ -14,11 +14,6 @@ const SEVERITY: Record<string, {
   LOW:      { label: "Low",      text: "text-[#065F46]", badge: "bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0]", border: "border-l-[#065F46]", soft: "bg-[#ECFDF5]", dot: "bg-[#065F46]" },
 };
 
-const CATEGORY_TITLES: Record<string, string> = {
-  NETWORK: "Network", NETWORK_SECURITY: "Network Security", WEB_APPLICATION: "Web Application",
-  CLOUD_SECURITY: "Cloud Security", INFRASTRUCTURE: "Infrastructure", ACCESS_CONTROL: "Access Control",
-  DATA_PROTECTION: "Data Protection", GOVERNANCE: "Governance", ENDPOINT_SECURITY: "Endpoint Security",
-};
 
 type DynEntry = { label: string; value: string | null; type: string; subtopic: string | null };
 
@@ -68,7 +63,7 @@ function FindingCard({ f, idx, total }: { f: any; idx: number; total: number }) 
   const fileEntries = dynamicEntries.filter(isFileEntry);
 
   return (
-    <div className="finding-enter bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm"
+    <div id={`finding-${f.id}`} className="finding-enter bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm"
       style={{ animationDelay: `${idx * 60}ms` }}
     >
       <div className="h-1.5 w-full bg-[#6366F1]" />
@@ -76,7 +71,6 @@ function FindingCard({ f, idx, total }: { f: any; idx: number; total: number }) 
         <div className="flex items-start justify-between gap-6">
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap items-center gap-2 mb-3">
-              <span className="text-[11px] px-2.5 py-1 bg-[#111827] text-white rounded font-medium">Finding #{idx + 1}</span>
             </div>
             <h4 className="text-[22px] font-bold text-[#111827] leading-snug">{f.title}</h4>
           </div>
@@ -91,7 +85,7 @@ function FindingCard({ f, idx, total }: { f: any; idx: number; total: number }) 
         <div className="mt-6 space-y-6">
           {displayEntries.map((entry, ei) => {
             if (entry.type === "subtopic") return (
-              <div key={ei} className="mt-10 mb-4">
+              <div key={ei} id={`finding-${f.id}-subtopic-${ei}`} className="mt-10 mb-4">
                 <div className="flex items-center gap-3">
                   <div className="h-px flex-1 bg-[#E5E7EB]" />
                   <span className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#6B7280] whitespace-nowrap px-1">{entry.label}</span>
@@ -150,7 +144,7 @@ function FindingCard({ f, idx, total }: { f: any; idx: number; total: number }) 
 
 // ─── EDITABLE FINDING CARD (preview modal) ───────────────────────────────────
 
-function EditableFindingCard({ finding, index, onChange }: {
+function EditableFindingCard({ finding, onChange }: {
   finding: any; index: number; onChange: (id: string, updated: any) => void;
 }) {
   let dynamicEntries: DynEntry[] = [];
@@ -200,7 +194,7 @@ function EditableFindingCard({ finding, index, onChange }: {
         <div className="flex items-start justify-between gap-6 mb-4">
           <div className="flex-1 min-w-0 space-y-3">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[11px] px-2.5 py-1 bg-[#111827] text-white rounded font-medium">Finding #{index + 1}</span>
+              
               {firstSevEntry?.value && (
                 <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded ${editedS.badge}`}>
                   <span className={`w-1.5 h-1.5 rounded-full ${editedS.dot}`} />{editedS.label}
@@ -291,7 +285,7 @@ function EditableFindingCard({ finding, index, onChange }: {
 
 // ─── PREVIEW MODAL ────────────────────────────────────────────────────────────
 
-function ReportPreviewModal({ findings, assessmentName, companyName, onClose, onRelease, releasing }: {
+function ReportPreviewModal({ findings,companyName, onClose, onRelease, releasing }: {
   findings: any[]; assessmentName: string | null; companyName: string | null;
   onClose: () => void; onRelease: (updatedFindings: any[]) => void; releasing: boolean;
 }) {
@@ -352,8 +346,7 @@ function ReportPreviewModal({ findings, assessmentName, companyName, onClose, on
                       {new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" })}
                     </span>
                   </div>
-                  <h1 className="text-[38px] font-bold leading-tight text-[#111827]">Vulnerability Assessment Report</h1>
-                  {assessmentName && <p className="text-lg text-[#6B7280] mt-2">{assessmentName}</p>}
+                  
                   <div className="mt-8 h-px bg-[#E5E7EB]" />
                   <div className="mt-6">
                     <div className="inline-flex items-center gap-3 px-4 py-3 rounded-lg bg-amber-50 border border-amber-200">
@@ -366,17 +359,80 @@ function ReportPreviewModal({ findings, assessmentName, companyName, onClose, on
                   </div>
                   <div className="mt-8 grid grid-cols-2 gap-x-10 gap-y-4 text-sm">
                     <div><SectionLabel>Client</SectionLabel><p className="text-[#111827] font-medium">{companyName || "—"}</p></div>
-                    <div><SectionLabel>Assessment</SectionLabel><p className="text-[#111827] font-medium">{assessmentName || "—"}</p></div>
+                    
                     <div><SectionLabel>Prepared by</SectionLabel><p className="text-[#111827] font-medium">ISCO Security</p></div>
                     <div><SectionLabel>Classification</SectionLabel><p className="text-[#111827] font-medium">Restricted</p></div>
                   </div>
                 </div>
               </div>
             </div>
+            {/* TABLE OF CONTENTS */}
+                  {findings.length > 0 && (
+                    <div className="bg-white border border-[#E5E7EB] border-t-0">
+                      <div className="px-10 py-10">
+                        <h2 className="text-2xl font-bold text-[#111827] mb-8">Table of Contents</h2>
+                        {(() => {
+                          let counter = 0;
+                          return (
+                            <div className="space-y-10">
+                              {findings.map((f) => {
+                                let entries: DynEntry[] = [];
+                                try {
+                                  const raw = f.dynamicFields || f.dynamic_fields;
+                                  const parsed = typeof raw === "string" ? JSON.parse(raw) : (raw || []);
+                                  if (Array.isArray(parsed)) entries = parsed;
+                                } catch { /* noop */ }
+
+                                
+                                let streak = 0;
+                                const subtopicsWithDepth: { entry: DynEntry; ei: number; depth: number }[] = [];
+                                entries.forEach((entry, ei) => {
+                                  if (entry.type === "subtopic") {
+                                    subtopicsWithDepth.push({ entry, ei, depth: streak });
+                                    streak += 1;
+                                  } else {
+                                    streak = 0;
+                                  }
+                                });
+
+                                if (subtopicsWithDepth.length === 0) return null;
+
+                                return (
+                                  <div key={f.id}>
+                                    <h3 className="text-lg font-semibold text-[#9CA3AF] mb-4">{f.title}</h3>
+                                    <nav className="space-y-3">
+                                      {subtopicsWithDepth.map(({ entry, ei, depth }) => {
+                                        counter += 1;
+                                        const indent = 12 + depth * 16;
+                                        return (
+                                          <a
+                                            key={ei}
+                                            href={`#finding-${f.id}-subtopic-${ei}`}
+                                            style={{ paddingLeft: `${indent}px` }}
+                                            className="flex items-baseline gap-3 text-sm text-indigo-600 hover:text-indigo-700 transition group"
+                                          >
+                                            <span className="whitespace-nowrap">{entry.label}</span>
+                                            <span className="flex-1 border-b border-dotted border-[#D1D5DB] translate-y-[-4px]" />
+                                            <span className="text-[#9CA3AF] font-mono text-xs whitespace-nowrap">
+                                              {String(counter).padStart(2, "0")}
+                                            </span>
+                                          </a>
+                                        );
+                                      })}
+                                    </nav>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    </div>
+                  )}
 
             <div className="bg-white border border-[#E5E7EB] border-t-0">
               <div className="px-10 py-10">
-                <SectionLabel>02 · Risk Classification</SectionLabel>
+                {/* <SectionLabel>02 · Risk Classification</SectionLabel> */}
                 <h2 className="text-2xl font-bold text-[#111827] mb-6">Risk Rating Matrix</h2>
                 <table className="w-full text-sm">
                   <thead>
@@ -409,9 +465,9 @@ function ReportPreviewModal({ findings, assessmentName, companyName, onClose, on
 
             <div className="bg-white border border-[#E5E7EB] border-t-0">
               <div className="px-10 py-10">
-                <SectionLabel>03 · Technical Findings</SectionLabel>
+                {/* <SectionLabel>03 · Technical Findings</SectionLabel> */}
                 <h2 className="text-2xl font-bold text-[#111827] mb-2">Detailed Findings &amp; Recommendations</h2>
-                <p className="text-sm text-[#6B7280] mb-3">{editedFindings.length} finding{editedFindings.length !== 1 ? "s" : ""} displayed</p>
+               
                 <div className="inline-flex items-center gap-1.5 text-[11px] text-indigo-600 bg-indigo-50 border border-indigo-100 px-3 py-1.5 rounded-full mb-8">
                   <Eye size={11} /> Click any field below to edit before releasing
                 </div>
@@ -421,7 +477,7 @@ function ReportPreviewModal({ findings, assessmentName, companyName, onClose, on
                       <div className="flex items-center gap-4 mb-8">
                         <div className="h-px flex-1 bg-[#E5E7EB]" />
                         <span className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#6B7280] whitespace-nowrap">
-                          {CATEGORY_TITLES[category] || category} · {items.length} {items.length === 1 ? "finding" : "findings"}
+                          
                         </span>
                         <div className="h-px flex-1 bg-[#E5E7EB]" />
                       </div>
@@ -489,9 +545,6 @@ export default function AssessmentReportPage() {
         setAssessmentId(finding.assessment?.id || null);
         setAssessmentName(finding.assessment?.name || null);
         setCompanyName(finding.assessment?.company?.name || null);
-        // ── Read reportSent from the finding itself, not the assessment ──
-        // The assessment.reportSent flag persists across sessions and causes
-        // the preview button to be hidden for newly added findings.
         setReportSent(finding.reportSent || false);
         setReportSentAt(finding.reportSentAt || null);
       })
@@ -561,7 +614,7 @@ export default function AssessmentReportPage() {
                     {new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" })}
                   </span>
                 </div>
-                <h1 className="text-[38px] font-bold leading-tight text-[#111827] max-w-full">Vulnerability Assessment Report</h1>
+               
                 <div className="mt-8 h-px bg-[#E5E7EB]" />
                 <div className="mt-6 flex items-center gap-3">
                   {reportSent ? (
@@ -602,10 +655,73 @@ export default function AssessmentReportPage() {
             </div>
           ) : (
             <>
+           {/* TABLE OF CONTENTS */}
+              {findings.length > 0 && (
+                <div className="bg-white border border-[#E5E7EB] border-t-0">
+                  <div className="px-10 py-10">
+                    <h2 className="text-2xl font-bold text-[#111827] mb-8">Table of Contents</h2>
+                    {(() => {
+                      let counter = 0;
+                      return (
+                        <div className="space-y-10">
+                          {findings.map((f) => {
+                            let entries: DynEntry[] = [];
+                            try {
+                              const raw = f.dynamicFields || f.dynamic_fields;
+                              const parsed = typeof raw === "string" ? JSON.parse(raw) : (raw || []);
+                              if (Array.isArray(parsed)) entries = parsed;
+                            } catch { /* noop */ }
+
+                          
+                            let streak = 0;
+                            const subtopicsWithDepth: { entry: DynEntry; ei: number; depth: number }[] = [];
+                            entries.forEach((entry, ei) => {
+                              if (entry.type === "subtopic") {
+                                subtopicsWithDepth.push({ entry, ei, depth: streak });
+                                streak += 1;
+                              } else {
+                                streak = 0;
+                              }
+                            });
+
+                            if (subtopicsWithDepth.length === 0) return null;
+
+                            return (
+                              <div key={f.id}>
+                                <h3 className="text-lg font-semibold text-[#9CA3AF] mb-4">{f.title}</h3>
+                                <nav className="space-y-3">
+                                  {subtopicsWithDepth.map(({ entry, ei, depth }) => {
+                                    counter += 1;
+                                    const indent = 12 + depth * 16;
+                                    return (
+                                      <a
+                                        key={ei}
+                                        href={`#finding-${f.id}-subtopic-${ei}`}
+                                        style={{ paddingLeft: `${indent}px` }}
+                                        className="flex items-baseline gap-3 text-sm text-indigo-600 hover:text-indigo-700 transition group"
+                                      >
+                                        <span className="whitespace-nowrap">{entry.label}</span>
+                                        <span className="flex-1 border-b border-dotted border-[#D1D5DB] translate-y-[-4px]" />
+                                        <span className="text-[#9CA3AF] font-mono text-xs whitespace-nowrap">
+                                          {String(counter).padStart(2, "0")}
+                                        </span>
+                                      </a>
+                                    );
+                                  })}
+                                </nav>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })()}
+                  </div>
+                </div>
+              )}
               {/* RISK RATING */}
               <div className="bg-white border border-[#E5E7EB] border-t-0">
                 <div className="px-10 py-10">
-                  <SectionLabel>02 · Risk Classification</SectionLabel>
+                  {/* <SectionLabel>02 · Risk Classification</SectionLabel> */}
                   <h2 className="text-2xl font-bold text-[#111827] mb-6">Risk Rating Matrix</h2>
                   <table className="w-full text-sm">
                     <thead>
@@ -639,17 +755,14 @@ export default function AssessmentReportPage() {
               {/* FINDINGS */}
               <div className="bg-white border border-[#E5E7EB] border-t-0">
                 <div className="px-10 py-10">
-                  <SectionLabel>03 · Technical Findings</SectionLabel>
+                  
                   <h2 className="text-2xl font-bold text-[#111827] mb-2">Detailed Findings &amp; Recommendations</h2>
-                  <p className="text-sm text-[#6B7280] mb-10">{findings.length} finding{findings.length !== 1 ? "s" : ""} displayed</p>
                   <div className="space-y-0">
                     {Object.entries(groupedFindings).map(([category, items], catIdx) => (
                       <div key={category} className={catIdx > 0 ? "mt-14" : ""}>
                         <div className="flex items-center gap-4 mb-8">
                           <div className="h-px flex-1 bg-[#E5E7EB]" />
-                          <span className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#6B7280] whitespace-nowrap">
-                            {CATEGORY_TITLES[category] || category} · {items.length} {items.length === 1 ? "finding" : "findings"}
-                          </span>
+                          <span className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#6B7280] whitespace-nowrap" />
                           <div className="h-px flex-1 bg-[#E5E7EB]" />
                         </div>
                         <div className="space-y-10">
@@ -672,7 +785,7 @@ export default function AssessmentReportPage() {
               {/* FOOTER */}
               <div className="bg-white border border-[#E5E7EB] border-t-0">
                 <div className="px-10 py-8 flex items-center justify-between">
-                  <p className="text-xs text-[#9CA3AF]">ISCO Technologies · Vulnerability Assessment Report</p>
+                  <p className="text-xs text-[#9CA3AF]">ISCO Technologies · Report</p>
                   <p className="text-xs text-[#9CA3AF] mono">{new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" })}</p>
                 </div>
               </div>

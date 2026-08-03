@@ -26,8 +26,8 @@ export const fetchChecklists =
   createAsyncThunk(
     "checklists/fetchAll",
 
-    async () => {
-      return await getChecklists();
+    async (includeArchived: boolean =false) => {
+      return await getChecklists(includeArchived);
     }
   );
 

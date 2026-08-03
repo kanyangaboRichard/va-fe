@@ -56,7 +56,7 @@ export default function ArchivesPage() {
   const fetchArchived = async () => {
     try {
       setChecklistsLoading(true);
-      const res = await apiClient.get("/checklists");
+      const res = await apiClient.get("/checklists",{params:{includeArchived: true}});
       const all = Array.isArray(res.data) ? res.data : res.data?.data ?? [];
       setChecklists(all.filter((c: any) => c.status === "ARCHIVED"));
     } catch (err: any) {
