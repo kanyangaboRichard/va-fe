@@ -12,11 +12,7 @@ const SEVERITY: Record<string, { label: string; text: string; badge: string; sof
   LOW:      { label: "Low",      text: "text-[#065F46]", badge: "bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0]", soft: "bg-[#ECFDF5]", dot: "bg-[#065F46]" },
 };
 
-const CATEGORY_TITLES: Record<string, string> = {
-  NETWORK: "Network", NETWORK_SECURITY: "Network Security", WEB_APPLICATION: "Web Application",
-  CLOUD_SECURITY: "Cloud Security", INFRASTRUCTURE: "Infrastructure", ACCESS_CONTROL: "Access Control",
-  DATA_PROTECTION: "Data Protection", GOVERNANCE: "Governance", ENDPOINT_SECURITY: "Endpoint Security",
-};
+
 
 type DynEntry = { label: string; value: string | null; type: string; subtopic: string | null };
 
@@ -46,6 +42,9 @@ function AttachmentLink({ href, label }: { href: string; label: string }) {
 // ─── FINDING CARD (read-only) ─────────────────────────────────────────────────
 // Mirrors AssessmentReportPage FindingCard exactly — severity and attachments
 // come from dynamicFields in order, no special pinned blocks.
+// Each field is wrapped in .field-block so PDF export can avoid breaking a
+// single field's label away from its value, without locking the whole card
+// (or the whole findings section) to one page.
 
 function FindingCard({ f, idx, total }: { f: any; idx: number; total: number }) {
   let dynamicEntries: DynEntry[] = [];
@@ -60,15 +59,13 @@ function FindingCard({ f, idx, total }: { f: any; idx: number; total: number }) 
   const fileEntries = dynamicEntries.filter(isFileEntry);
 
   return (
-    <div className="finding-enter bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm"
-      style={{ animationDelay: `${idx * 60}ms` }}
-    >
+    <div id={`finding-${f.id}`} className="bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm">
       <div className="h-1.5 w-full bg-[#6366F1]" />
       <div className="p-8">
-        <div className="flex items-start justify-between gap-6">
+        <div className="flex items-start justify-between gap-6 field-block">
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap items-center gap-2 mb-3">
-              <span className="text-[11px] px-2.5 py-1 bg-[#111827] text-white rounded font-medium">Finding #{idx + 1}</span>
+              {/* <span className="text-[11px] px-2.5 py-1 bg-[#111827] text-white rounded font-medium">Finding #{idx + 1}</span> */}
             </div>
             <h4 className="text-[22px] font-bold text-[#111827] leading-snug">{f.title}</h4>
           </div>
@@ -83,7 +80,7 @@ function FindingCard({ f, idx, total }: { f: any; idx: number; total: number }) 
         <div className="mt-6 space-y-6">
           {displayEntries.map((entry, ei) => {
             if (entry.type === "subtopic") return (
-              <div key={ei} className="mt-10 mb-4">
+              <div key={ei} id={`finding-${f.id}-subtopic-${ei}`} className="mt-10 mb-4 field-block">
                 <div className="flex items-center gap-3">
                   <div className="h-px flex-1 bg-[#E5E7EB]" />
                   <span className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#6B7280] whitespace-nowrap px-1">{entry.label}</span>
@@ -94,7 +91,7 @@ function FindingCard({ f, idx, total }: { f: any; idx: number; total: number }) 
             if (entry.type === "severity" && entry.value) {
               const sev = SEVERITY[String(entry.value).toUpperCase()] || SEVERITY.LOW;
               return (
-                <div key={ei}>
+                <div key={ei} className="field-block">
                   <SectionLabel>{entry.label}</SectionLabel>
                   <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded ${sev.badge}`}>
                     <span className={`w-1.5 h-1.5 rounded-full ${sev.dot}`} />{sev.label}
@@ -102,8 +99,9 @@ function FindingCard({ f, idx, total }: { f: any; idx: number; total: number }) 
                 </div>
               );
             }
+            if (!entry.value || !entry.value.trim()) return null;
             return (
-              <div key={ei}>
+              <div key={ei} className="field-block">
                 <SectionLabel>{entry.label}</SectionLabel>
                 <p className="text-[#374151] leading-7 text-[14px] whitespace-pre-wrap">{entry.value}</p>
               </div>
@@ -111,25 +109,24 @@ function FindingCard({ f, idx, total }: { f: any; idx: number; total: number }) 
           })}
 
           {fileEntries.map((entry, i) => (
-            <div key={i}>
+            <div key={i} className="field-block">
               <SectionLabel>{entry.label}</SectionLabel>
               <AttachmentLink href={entry.value || "#"} label={entry.label} />
             </div>
           ))}
 
           {affEntry?.value && (
-            <div className="mt-6 pt-5 border-t border-[#F3F4F6]">
+            <div className="mt-6 pt-5 border-t border-[#F3F4F6] field-block">
               <SectionLabel>Affected Systems</SectionLabel>
               <p className="text-[#374151] leading-7 text-[14px] whitespace-pre-wrap">{affEntry.value}</p>
             </div>
           )}
         </div>
 
-        <div className="mt-6 pt-4 border-t border-[#F3F4F6] flex justify-between text-[11px] text-[#9CA3AF]">
+        <div className="mt-6 pt-4 border-t border-[#F3F4F6] flex justify-between text-[11px] text-[#9CA3AF] field-block">
           <span className="mono">{f.cvssVector || ""}</span>
-          <div className="flex gap-4">
-            {f.createdAt && <span>Created {new Date(f.createdAt).toLocaleDateString()}</span>}
-            {f.updatedAt && <span>Updated {new Date(f.updatedAt).toLocaleDateString()}</span>}
+          <div className="mt-6 pt-4 border-t border-[#F3F4F6] flex justify-between text-[11px] text-[#9CA3AF] field-block">
+           <span className="mono">{f.cvssVector || ""}</span>
           </div>
         </div>
       </div>
@@ -193,9 +190,26 @@ export default function ClientReportViewPage() {
         }
       });
 
-      // Prevent page breaks inside finding cards
-      const cards = reportRef.current.querySelectorAll(".finding-enter, .bg-white.border");
-      cards.forEach((el) => { (el as HTMLElement).style.pageBreakInside = "avoid"; });
+      // Strip box-shadow + rounded-corner clipping on card containers —
+      // html2canvas renders these as a bleeding/cut edge when a tall card
+      // gets sliced across a page break by html2pdf's pagination.
+      const cardEls = reportRef.current.querySelectorAll<HTMLElement>(".shadow-sm");
+      const origCardStyles: { el: HTMLElement; boxShadow: string; borderRadius: string; overflow: string }[] = [];
+      cardEls.forEach((el) => {
+        origCardStyles.push({
+          el,
+          boxShadow: el.style.boxShadow,
+          borderRadius: el.style.borderRadius,
+          overflow: el.style.overflow,
+        });
+        el.style.boxShadow = "none";
+        el.style.borderRadius = "0";
+        el.style.overflow = "visible";
+      });
+
+      // Avoid breaking a single field's label away from its value
+      const fieldBlocks = reportRef.current.querySelectorAll(".field-block");
+      fieldBlocks.forEach((el) => { (el as HTMLElement).style.pageBreakInside = "avoid"; });
 
       await html2pdf()
         .set({
@@ -204,14 +218,22 @@ export default function ClientReportViewPage() {
           image:       { type: "jpeg", quality: 0.98 },
           html2canvas: { scale: 2, useCORS: true, logging: false },
           jsPDF:       { unit: "mm", format: "a4", orientation: "portrait" },
-          pagebreak:   { mode: ["avoid-all", "css", "legacy"] },
+          pagebreak:   { mode: ["css", "legacy"] },
         } as any)
         .from(reportRef.current)
         .save();
-      // Restore page break styles
-      cards.forEach((el) => { (el as HTMLElement).style.pageBreakInside = ""; });
 
-      // Restore original styles
+      // Restore page break styles
+      fieldBlocks.forEach((el) => { (el as HTMLElement).style.pageBreakInside = ""; });
+
+      // Restore card shadow/radius/overflow
+      origCardStyles.forEach(({ el, boxShadow, borderRadius, overflow }) => {
+        el.style.boxShadow = boxShadow;
+        el.style.borderRadius = borderRadius;
+        el.style.overflow = overflow;
+      });
+
+      // Restore original colors
       origStyles.forEach(({ el }) => {
         const htmlEl = el as HTMLElement;
         htmlEl.style.color           = "";
@@ -243,8 +265,7 @@ export default function ClientReportViewPage() {
         .report-root { font-family: 'DM Sans', sans-serif; }
         .report-root h1, .report-root h2, .report-root h3, .report-root h4 { font-family: 'Lora', serif; }
         .report-root code, .report-root .mono { font-family: 'DM Mono', monospace; }
-        .finding-enter { animation: fadeUp 0.35s ease both; }
-        @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+        .field-block { page-break-inside: avoid; break-inside: avoid; }
       `}</style>
 
       {/* PDF DOWNLOAD BUTTON */}
@@ -260,12 +281,12 @@ export default function ClientReportViewPage() {
       <div className="report-root min-h-screen bg-[#F8F8F6] py-4 px-4 md:px-8">
         <div ref={reportRef} className="max-w-[860px] mx-auto">
 
-          {/* COVER */}
+          {/* COVER — spacing tightened, green "Official Report" badge removed */}
           <div className="bg-white border border-[#E5E7EB]">
             <div className="flex items-stretch">
               <div className="w-1.5 bg-[#1E1E2E] flex-shrink-0" />
-              <div className="flex-1 px-10 py-14">
-                <div className="flex items-center justify-between mb-12">
+              <div className="flex-1 px-10 py-8">
+                <div className="flex items-center justify-between mb-6">
                   <span className="text-[10px] tracking-[0.22em] uppercase text-[#9CA3AF] font-semibold">
                     Confidential · For Authorized Recipients Only
                   </span>
@@ -273,28 +294,18 @@ export default function ClientReportViewPage() {
                     {new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" })}
                   </span>
                 </div>
-                <h1 className="text-[38px] font-bold leading-tight text-[#111827] max-w-full">
-                  Vulnerability Assessment Report
-                </h1>
-                {assessmentName && <p className="text-lg text-[#6B7280] mt-2">{assessmentName}</p>}
-                <div className="mt-8 h-px bg-[#E5E7EB]" />
-                <div className="mt-6">
-                  <div className="inline-flex items-center gap-3 px-4 py-3 rounded-lg bg-[#ECFDF5] border border-[#A7F3D0]">
-                    <div className="w-2 h-2 rounded-full bg-[#059669]" />
-                    <div>
-                      <p className="text-sm font-semibold text-[#065F46]">Official Report</p>
-                      {reportSentAt && (
-                        <p className="text-xs text-[#047857] mt-0.5">
-                          Released on {new Date(reportSentAt).toLocaleString("en-GB", {
-                            day: "2-digit", month: "long", year: "numeric",
-                            hour: "2-digit", minute: "2-digit",
-                          })}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-8 grid grid-cols-2 gap-x-10 gap-y-4 text-sm">
+                {/* <h1 className="text-[38px] font-bold leading-tight text-[#111827] max-w-full">Vulnerability Assessment Report</h1> */}
+                {/*assessmentName && <p className="text-lg text-[#6B7280] mt-2">{assessmentName}</p>*/}
+                <div className="mt-4 h-px bg-[#E5E7EB]" />
+                {reportSentAt && (
+                  <p className="text-xs text-[#9CA3AF] mt-4">
+                    Released on {new Date(reportSentAt).toLocaleString("en-GB", {
+                      day: "2-digit", month: "long", year: "numeric",
+                      hour: "2-digit", minute: "2-digit",
+                    })}
+                  </p>
+                )}
+                <div className="mt-4 grid grid-cols-2 gap-x-10 gap-y-4 text-sm">
                   <div><SectionLabel>Client</SectionLabel><p className="text-[#111827] font-medium">{companyName || "—"}</p></div>
                   <div><SectionLabel>Prepared by</SectionLabel><p className="text-[#111827] font-medium">ISCO Security</p></div>
                   <div><SectionLabel>Classification</SectionLabel><p className="text-[#111827] font-medium">Restricted</p></div>
@@ -312,11 +323,76 @@ export default function ClientReportViewPage() {
             </div>
           ) : (
             <>
-              {/* RISK RATING */}
+              {/* TABLE OF CONTENTS */}
+              {findings.length > 0 && (
+                <div className="bg-white border border-[#E5E7EB] border-t-0">
+                  <div className="px-10 py-10">
+                    <h2 className="text-2xl font-bold text-[#111827] mb-8">Table of Contents</h2>
+                    {(() => {
+                      let counter = 0;
+                      return (
+                        <div className="space-y-10">
+                          {findings.map((f) => {
+                            let entries: DynEntry[] = [];
+                            try {
+                              const raw = f.dynamicFields || f.dynamic_fields;
+                              const parsed = typeof raw === "string" ? JSON.parse(raw) : (raw || []);
+                              if (Array.isArray(parsed)) entries = parsed;
+                            } catch { /* noop */ }
+
+                            // Walk the full entries array in order, tracking a streak of
+                            // consecutive subtopics. Any non-subtopic field breaks the streak,
+                            // so the next subtopic starts fresh at the shallow indent again.
+                            let streak = 0;
+                            const subtopicsWithDepth: { entry: DynEntry; ei: number; depth: number }[] = [];
+                            entries.forEach((entry, ei) => {
+                              if (entry.type === "subtopic") {
+                                subtopicsWithDepth.push({ entry, ei, depth: streak });
+                                streak += 1;
+                              } else {
+                                streak = 0;
+                              }
+                            });
+
+                            if (subtopicsWithDepth.length === 0) return null;
+
+                            return (
+                              <div key={f.id}>
+                                <h3 className="text-lg font-semibold text-[#9CA3AF] mb-4">{f.title}</h3>
+                                <nav className="space-y-3">
+                                  {subtopicsWithDepth.map(({ entry, ei, depth }) => {
+                                    counter += 1;
+                                    const indent = 12 + depth * 16;
+                                    return (
+                                      <a
+                                        key={ei}
+                                        href={`#finding-${f.id}-subtopic-${ei}`}
+                                        style={{ paddingLeft: `${indent}px` }}
+                                        className="flex items-baseline gap-3 text-sm text-indigo-600 hover:text-indigo-700 transition group"
+                                      >
+                                        <span className="whitespace-nowrap">{entry.label}</span>
+                                        <span className="flex-1 border-b border-dotted border-[#D1D5DB] translate-y-[-4px]" />
+                                        <span className="text-[#9CA3AF] font-mono text-xs whitespace-nowrap">
+                                          {String(counter).padStart(2, "0")}
+                                        </span>
+                                      </a>
+                                    );
+                                  })}
+                                </nav>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })()}
+                  </div>
+                </div>
+              )}
+
+              {/* RISK RATING — spacing tightened */}
               <div className="bg-white border border-[#E5E7EB] border-t-0">
-                <div className="px-10 py-10">
-                  <SectionLabel>02 · Risk Classification</SectionLabel>
-                  <h2 className="text-2xl font-bold text-[#111827] mb-6">Risk Rating Matrix</h2>
+                <div className="px-10 py-6">
+                  <h2 className="text-2xl font-bold text-[#111827] mb-4">Risk Rating Matrix</h2>
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-[#E5E7EB]">
@@ -353,10 +429,10 @@ export default function ClientReportViewPage() {
               {/* FINDINGS */}
               <div className="bg-white border border-[#E5E7EB] border-t-0">
                 <div className="px-10 py-10">
-                  <SectionLabel>03 · Technical Findings</SectionLabel>
+                  {/* <SectionLabel>03 · Technical Findings</SectionLabel> */}
                   <h2 className="text-2xl font-bold text-[#111827] mb-2">Detailed Findings &amp; Recommendations</h2>
                   <p className="text-sm text-[#6B7280] mb-10">
-                    {findings.length} finding{findings.length !== 1 ? "s" : ""} displayed
+                    {/* {findings.length} finding{findings.length !== 1 ? "s" : ""} displayed */}
                   </p>
                   <div className="space-y-0">
                     {Object.entries(groupedFindings).map(([category, items], catIdx) => (
@@ -364,7 +440,7 @@ export default function ClientReportViewPage() {
                         <div className="flex items-center gap-4 mb-8">
                           <div className="h-px flex-1 bg-[#E5E7EB]" />
                           <span className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#6B7280] whitespace-nowrap">
-                            {CATEGORY_TITLES[category] || category} · {items.length} {items.length === 1 ? "finding" : "findings"}
+                            {/* CATEGORY_TITLES[category] || category */}  {/*items.length === 1 ? "finding" : "findings"*/}
                           </span>
                           <div className="h-px flex-1 bg-[#E5E7EB]" />
                         </div>
@@ -388,7 +464,7 @@ export default function ClientReportViewPage() {
               {/* FOOTER */}
               <div className="bg-white border border-[#E5E7EB] border-t-0">
                 <div className="px-10 py-8 flex items-center justify-between">
-                  <p className="text-xs text-[#9CA3AF]">ISCO Technologies · Vulnerability Assessment Report</p>
+                  <p className="text-xs text-[#9CA3AF]">ISCO Technologies · Report</p>
                   <p className="text-xs text-[#9CA3AF] mono">
                     {new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" })}
                   </p>

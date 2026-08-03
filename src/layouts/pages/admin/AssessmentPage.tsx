@@ -39,7 +39,7 @@ const Assessments = () => {
   useEffect(() => {
     dispatch(fetchAssessments());
     dispatch(fetchCompanies());
-    dispatch(fetchChecklists());
+    dispatch(fetchChecklists(false));
   }, [dispatch]);
 
   // Reset to page 1 when filters change
@@ -70,11 +70,7 @@ const Assessments = () => {
     }
   };
 
-  // STATS — critical/high/medium/low/findingsCount now come pre-computed
-  // from the backend (AssessmentService.getAll), since severity actually
-  // lives inside each finding's dynamicFields, not the raw finding.severity
-  // column (which is always null and can't be used here).
-  const calculateStats = (assessment: any) => {
+   const calculateStats = (assessment: any) => {
     return {
       total: assessment.findingsCount ?? (assessment.findings?.length || 0),
       critical: assessment.critical || 0,
@@ -251,6 +247,7 @@ const Assessments = () => {
               <tr>
                 <th className="px-5 py-4 text-left font-semibold text-gray-600">Company</th>
                 <th className="px-5 py-4 text-left font-semibold text-gray-600">Assessment</th>
+                <th className="px-5 py-4 text-left font-semibold text-gray-600">Date</th>
                 <th className="px-5 py-4 text-left font-semibold text-gray-600">Findings</th>
                 <th className="px-5 py-4 text-left font-semibold text-gray-600">Critical</th>
                 <th className="px-5 py-4 text-left font-semibold text-gray-600">High</th>
@@ -270,6 +267,11 @@ const Assessments = () => {
                   >
                     <td className="px-5 py-5 font-semibold text-gray-800">{a.company?.name || "—"}</td>
                     <td className="px-5 py-5 text-gray-700">{a.checklist?.name || "—"}</td>
+                    <td className="px-5 py-5 text-xs text-gray-500">
+                        {a.createdAt
+                        ? new Date(a.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
+                          : "—"}
+                    </td>
                     <td className="px-5 py-5 font-semibold">{stats.total}</td>
                     <td className="px-5 py-5">
                       <span className="bg-red-100 text-red-700 text-xs px-3 py-1 rounded-full font-medium">{stats.critical}</span>
@@ -299,7 +301,7 @@ const Assessments = () => {
 
               {paginated.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="text-center p-10 text-gray-400">
+                  <td colSpan={8} className="text-center p-10 text-gray-400">
                     No assessments found
                   </td>
                 </tr>
